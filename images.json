@@ -1,0 +1,12 @@
+[
+  {
+    "thumb": "thumb1.jpg",
+    "main": "main1.jpg",
+    "zoom": "zoom1.jpg"
+  },
+  {
+    "thumb": "thumb2.jpg",
+    "main": "main2.jpg",
+    "zoom": "zoom2.jpg"
+  }
+]
