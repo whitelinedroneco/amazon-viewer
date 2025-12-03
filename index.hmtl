@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WhiteLine Drone Co - Viewer</title>
+
+<link rel="stylesheet" href="https://unpkg.com/drift-zoom/dist/drift-basic.min.css">
+<script src="https://unpkg.com/drift-zoom/dist/Drift.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/css/lightgallery-bundle.min.css">
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/lightgallery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lightgallery@2.7.1/plugins/zoom/lg-zoom.min.js"></script>
+
+<style>
+  body { font-family: sans-serif; margin: 0; padding: 1rem; }
+  .viewer { display: flex; gap: 1rem; }
+  .thumbs { display: flex; flex-direction: column; gap: .5rem; }
+  .thumbs img { width: 75px; cursor: pointer; border: 2px solid transparent; }
+  .thumbs img.active { border-color: #1a3a5a; }
+  .main { max-width: 650px; }
+  #pane { width: 350px; height: 350px; border: 1px solid #ccc; display: none; }
+  @media(max-width:768px){ .viewer{flex-direction:column;} #pane{display:none!important;} }
+</style>
+</head>
+
+<body>
+
+<div id="viewer" class="viewer">
+  <div class="thumbs"></div>
+  <div class="main"><img id="mainImg" src=""></div>
+  <div id="pane"></div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const thumbs = document.querySelector(".thumbs");
+  const mainImg = document.querySelector("#mainImg");
+  const pane = document.querySelector("#pane");
+
+  fetch("images.json")
+    .then(res => res.json())
+    .then(data => {
+      data.forEach((img, i) => {
+        let t = document.createElement("img");
+        t.src = img.thumb;
+
+        t.onclick = () => {
+          mainImg.src = img.main;
+          mainImg.dataset.zoom = img.zoom;
+          document.querySelectorAll(".thumbs img").forEach(el => el.classList.remove("active"));
+          t.classList.add("active");
+          drift.setZoomImageURL(img.zoom);
+        };
+
+        if (i === 0) t.classList.add("active");
+        thumbs.appendChild(t);
+
+        if (i === 0) {
+          mainImg.src = img.main;
+          mainImg.dataset.zoom = img.zoom;
+        }
+      });
+
+      window.drift = new Drift(mainImg, {
+        paneContainer: pane,
+        inlinePane: false,
+        hoverBoundingBox: true,
+        zoomFactor: 2.5
+      });
+    });
+
+  lightGallery(document.querySelector("#viewer"), {
+    selector: "img",
+    plugins: [lgZoom],
+    zoom: true,
+    download: false
+  });
+
+});
+</script>
+
+</body>
+</html>
